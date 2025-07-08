@@ -1,9 +1,9 @@
 package com.chatop.backend.controller;
 
-import com.chatop.backend.dto.LoginRequestDto;
-import com.chatop.backend.dto.LoginResponseDto;
-import com.chatop.backend.dto.RegisterRequestDto;
-import com.chatop.backend.dto.AuthResponseDto;
+import com.chatop.backend.dto.Auth.LoginRequestDto;
+import com.chatop.backend.dto.UserResponseDto;
+import com.chatop.backend.dto.Auth.RegisterRequestDto;
+import com.chatop.backend.dto.Auth.AuthResponseDto;
 import com.chatop.backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<LoginResponseDto> me(JwtAuthenticationToken jwtAuthenticationToken) {
+    public ResponseEntity<UserResponseDto> me(JwtAuthenticationToken jwtAuthenticationToken) {
         return ResponseEntity.ok(authService.getAuthenticatedUserInfos(jwtAuthenticationToken));
     }
 

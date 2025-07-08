@@ -1,9 +1,7 @@
 package com.chatop.backend.dto;
 
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +11,13 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponseDto {
+public class UserResponseDto {
     Integer id;
     String name;
     String email;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+
+    @JsonFormat(pattern = "yyyy/MM/dd")
+    LocalDateTime created_at;
+    @JsonFormat(pattern = "yyyy/MM/dd")
+    LocalDateTime updated_at;
 }

@@ -1,4 +1,4 @@
-package com.chatop.backend.dto;
+package com.chatop.backend.dto.Auth;
 
 
 import lombok.AllArgsConstructor;

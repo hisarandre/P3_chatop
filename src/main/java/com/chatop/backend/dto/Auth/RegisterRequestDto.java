@@ -1,5 +1,4 @@
-package com.chatop.backend.dto;
-
+package com.chatop.backend.dto.Auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,14 +10,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequestDto {
+public class RegisterRequestDto {
 
     @Email
     @NotBlank
     @Size(min = 3, max = 255)
-    String email;
+    private String email;
+
+    @NotBlank
+    @Size(min = 3, max = 255)
+    private String name;
 
     @NotBlank
     @Size(min = 6, max = 255)
-    String password;
+    private String password;
+
 }

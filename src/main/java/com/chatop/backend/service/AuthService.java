@@ -1,9 +1,9 @@
 package com.chatop.backend.service;
 
-import com.chatop.backend.dto.LoginRequestDto;
-import com.chatop.backend.dto.LoginResponseDto;
-import com.chatop.backend.dto.RegisterRequestDto;
-import com.chatop.backend.dto.AuthResponseDto;
+import com.chatop.backend.dto.Auth.LoginRequestDto;
+import com.chatop.backend.dto.UserResponseDto;
+import com.chatop.backend.dto.Auth.RegisterRequestDto;
+import com.chatop.backend.dto.Auth.AuthResponseDto;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.exception.UserAlreadyExistsException;
 import com.chatop.backend.exception.UserNotFoundException;
@@ -79,13 +79,13 @@ public class AuthService {
         }
     }
 
-    public LoginResponseDto getAuthenticatedUserInfos(JwtAuthenticationToken jwtAuthenticationToken) {
+    public UserResponseDto getAuthenticatedUserInfos(JwtAuthenticationToken jwtAuthenticationToken) {
         User user = this.getAuthenticatedUser(jwtAuthenticationToken);
 
-        return new LoginResponseDto(
+        return new UserResponseDto(
                 user.getId(),
-                user.getEmail(),
                 user.getName(),
+                user.getEmail(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
@@ -93,13 +93,13 @@ public class AuthService {
 
     public User getAuthenticatedUser(JwtAuthenticationToken jwtAuthenticationToken) {
         if (jwtAuthenticationToken == null || jwtAuthenticationToken.getName() == null) {
-            throw new RuntimeException("Invalid JWT token");
+            throw new RuntimeException("Invalid token");
         }
 
         String authenticatedUserEmail = jwtAuthenticationToken.getName();
 
         return userRepository.findByEmail(authenticatedUserEmail)
-                .orElseThrow(() -> new UserNotFoundException(authenticatedUserEmail));
+                .orElseThrow(() -> UserNotFoundException.byEmail(authenticatedUserEmail));
     }
 
     private String generateTokenForUser(String email, String password) {

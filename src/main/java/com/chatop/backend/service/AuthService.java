@@ -1,9 +1,7 @@
 package com.chatop.backend.service;
 
 import com.chatop.backend.dto.Auth.LoginRequestDto;
-import com.chatop.backend.dto.UserResponseDto;
 import com.chatop.backend.dto.Auth.RegisterRequestDto;
-import com.chatop.backend.dto.Auth.AuthResponseDto;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.exception.UserAlreadyExistsException;
 import com.chatop.backend.exception.UserNotFoundException;
@@ -30,7 +28,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public AuthResponseDto registerUser(RegisterRequestDto registerRequestDto) {
+    public String registerUser(RegisterRequestDto registerRequestDto) {
 
         // Check if the user exist
         if (userRepository.findByEmail(registerRequestDto.getEmail()).isPresent()) {
@@ -44,51 +42,34 @@ public class AuthService {
             user.setName(registerRequestDto.getName());
             user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
 
-            User savedUser = userRepository.save(user);
+            userRepository.save(user);
 
-            // Generate token
-            String token = generateTokenForUser(
+            return generateTokenForUser(
                     registerRequestDto.getEmail(),
                     registerRequestDto.getPassword()
             );
-
-            return new AuthResponseDto(token);
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to register user", e);
         }
     }
 
-    public AuthResponseDto loginUser(LoginRequestDto loginRequestDto) {
+    public String loginUser(LoginRequestDto loginRequestDto) {
         try {
             // Check if user exists
             if (userRepository.findByEmail(loginRequestDto.getEmail()).isEmpty()) {
                 throw new BadCredentialsException("Invalid credentials");
             }
 
-            String token = generateTokenForUser(
+            return generateTokenForUser(
                     loginRequestDto.getEmail(),
                     loginRequestDto.getPassword()
             );
-
-            return new AuthResponseDto(token);
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Invalid credentials");
         } catch (Exception e) {
             throw new RuntimeException("Login failed", e);
         }
-    }
-
-    public UserResponseDto getAuthenticatedUserInfos(JwtAuthenticationToken jwtAuthenticationToken) {
-        User user = this.getAuthenticatedUser(jwtAuthenticationToken);
-
-        return new UserResponseDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
     }
 
     public User getAuthenticatedUser(JwtAuthenticationToken jwtAuthenticationToken) {

@@ -15,16 +15,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserResponseDto getUserById(Integer id) {
-        User user = userRepository.findById(id)
+    public User getUserById(Integer id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> UserNotFoundException.byId(id));
-
-        return new UserResponseDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
     }
 }

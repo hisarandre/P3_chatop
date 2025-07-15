@@ -1,12 +1,12 @@
 package com.chatop.backend.mapper;
 
 
-import com.chatop.backend.dto.Rental.RentalCreateRequestDto;
-import com.chatop.backend.dto.Rental.RentalResponseDto;
-import com.chatop.backend.dto.Rental.RentalsResponseDto;
+import com.chatop.backend.dto.rental.RentalCreateRequestDto;
+import com.chatop.backend.dto.rental.RentalResponseDto;
+import com.chatop.backend.dto.rental.RentalUpdateRequestDto;
+import com.chatop.backend.dto.rental.RentalsResponseDto;
 import com.chatop.backend.entity.Rental;
 import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -16,13 +16,14 @@ public interface RentalMapper {
     // Entity to DTO
     @Mapping(source = "createdAt", target = "created_at")
     @Mapping(source = "updatedAt", target = "updated_at")
+    @Mapping(source = "owner.id", target = "owner_id")
     @Mapping(target = "picture", expression = "java(com.chatop.backend.util.UrlUtils.buildFileUrl(rental.getPicture()))")
     RentalResponseDto toRentalResponseDto(Rental rental);
 
     // List of Rentals to List of DTOs
     List<RentalResponseDto> toRentalResponseDtoList(List<Rental> rentals);
 
-    // Wrap the list in the RentalsResponseDto
+    // Wrap the list in the RentalsResponseDTO
     default RentalsResponseDto toRentalsResponseDto(List<Rental> rentals) {
         return new RentalsResponseDto(toRentalResponseDtoList(rentals));
     }
@@ -32,4 +33,12 @@ public interface RentalMapper {
     @Mapping(target = "owner", ignore = true) // Set manually
     @Mapping(target = "picture", ignore = true) // Set manually
     Rental createRentalDtoToEntity(RentalCreateRequestDto dto);
+
+
+    // Update Rental from DTO
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "picture", ignore = true)
+    void updateRentalFromDto(RentalUpdateRequestDto dto, @MappingTarget Rental rental);
 }

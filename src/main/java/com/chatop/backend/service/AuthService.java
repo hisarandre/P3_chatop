@@ -1,7 +1,7 @@
 package com.chatop.backend.service;
 
-import com.chatop.backend.dto.Auth.LoginRequestDto;
-import com.chatop.backend.dto.Auth.RegisterRequestDto;
+import com.chatop.backend.dto.auth.LoginRequestDto;
+import com.chatop.backend.dto.auth.RegisterRequestDto;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.exception.UserAlreadyExistsException;
 import com.chatop.backend.exception.UserNotFoundException;

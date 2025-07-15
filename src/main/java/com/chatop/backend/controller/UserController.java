@@ -1,6 +1,6 @@
 package com.chatop.backend.controller;
 
-import com.chatop.backend.dto.UserResponseDto;
+import com.chatop.backend.dto.user.UserResponseDto;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.mapper.UserMapper;
 import com.chatop.backend.service.UserService;

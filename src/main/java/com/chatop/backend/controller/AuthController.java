@@ -1,9 +1,9 @@
 package com.chatop.backend.controller;
 
-import com.chatop.backend.dto.Auth.LoginRequestDto;
-import com.chatop.backend.dto.UserResponseDto;
-import com.chatop.backend.dto.Auth.RegisterRequestDto;
-import com.chatop.backend.dto.Auth.AuthResponseDto;
+import com.chatop.backend.dto.auth.LoginRequestDto;
+import com.chatop.backend.dto.user.UserResponseDto;
+import com.chatop.backend.dto.auth.RegisterRequestDto;
+import com.chatop.backend.dto.auth.AuthResponseDto;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.mapper.UserMapper;
 import com.chatop.backend.service.AuthService;

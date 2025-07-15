@@ -1,5 +1,6 @@
 package com.chatop.backend.service;
-import com.chatop.backend.dto.Rental.RentalCreateRequestDto;
+import com.chatop.backend.dto.rental.RentalCreateRequestDto;
+import com.chatop.backend.dto.rental.RentalUpdateRequestDto;
 import com.chatop.backend.entity.Rental;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.exception.InvalidFileTypeException;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -34,36 +32,22 @@ public class RentalService {
     private final RentalMapper rentalMapper;
     private final UserRepository userRepository;
 
+    private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp");
+    private static final Path UPLOAD_PATH = Paths.get("upload");
+
     public List<Rental> getAllRentals() {
         return rentalRepository.findAll();
     }
 
     @Transactional
-    public void createRental(RentalCreateRequestDto rentalDto, JwtAuthenticationToken jwtAuthenticationToken) throws IOException {
-        MultipartFile pictureFile = rentalDto.getPicture();
+    public void createRental(RentalCreateRequestDto rentalDto, JwtAuthenticationToken token) throws IOException {
+        User user = userRepository.findByEmail(token.getName())
+                .orElseThrow(() -> UserNotFoundException.byEmail(token.getName()));
 
-        // Validate file type
-        Set<String> allowedTypes = Set.of("image/jpeg", "image/png", "image/webp");
-        if (!allowedTypes.contains(pictureFile.getContentType())) {
-            throw InvalidFileTypeException.forType(pictureFile.getContentType());
-        }
+        String picturePath = handlePictureUpload(rentalDto.getPicture());
 
-        String fileName = UUID.randomUUID() + "_" + pictureFile.getOriginalFilename();
-        Path uploadPath = Paths.get("upload");
-
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        Path filePath = uploadPath.resolve(fileName);
-        Files.copy(pictureFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-        User user = userRepository.findByEmail(jwtAuthenticationToken.getName())
-                .orElseThrow(() -> UserNotFoundException.byEmail(jwtAuthenticationToken.getName()));
-
-        // Map Dto to Entity
         Rental rental = rentalMapper.createRentalDtoToEntity(rentalDto);
-        rental.setPicture("/upload/" + fileName);
+        rental.setPicture(picturePath);
         rental.setOwner(user);
 
         rentalRepository.save(rental);
@@ -74,11 +58,41 @@ public class RentalService {
                 .orElseThrow(() -> new EntityNotFoundException("Rental not found with id: " + id));
     }
 
-    //public RentalResponseDto updateRental(@PathVariable Integer id) {
-    //    return ResponseEntity.ok(rentalService.getRentalById(id));
-    //}
+    @Transactional
+    public void updateRental(Integer id, RentalUpdateRequestDto rentalDto, JwtAuthenticationToken token) throws IOException {
+        Rental existingRental = rentalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Rental not found with id: " + id));
 
+        User user = userRepository.findByEmail(token.getName())
+                .orElseThrow(() -> UserNotFoundException.byEmail(token.getName()));
 
+        // Verify if the user created the rental
+        if (!existingRental.getOwner().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You can only update your own rental");
+        }
 
+        // Update the existing entity
+        rentalMapper.updateRentalFromDto(rentalDto, existingRental);
+
+        rentalRepository.save(existingRental);
+    }
+
+    private String handlePictureUpload(MultipartFile newPicture) throws IOException {
+        if (!ALLOWED_TYPES.contains(newPicture.getContentType())) {
+            throw InvalidFileTypeException.forType(newPicture.getContentType());
+        }
+
+        // Create upload folder if not exist
+        if (!Files.exists(UPLOAD_PATH)) {
+            Files.createDirectories(UPLOAD_PATH);
+        }
+
+        String newFileName = UUID.randomUUID() + "_" + newPicture.getOriginalFilename();
+        Path targetPath = UPLOAD_PATH.resolve(newFileName);
+
+        Files.copy(newPicture.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+        return "/upload/" + newFileName;
+    }
 
 }

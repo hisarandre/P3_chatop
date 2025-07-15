@@ -1,4 +1,4 @@
-package com.chatop.backend.dto.Auth;
+package com.chatop.backend.dto.auth;
 
 
 import jakarta.validation.constraints.Email;

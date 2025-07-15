@@ -1,19 +1,17 @@
-package com.chatop.backend.dto.Rental;
+package com.chatop.backend.dto.rental;
 
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RentalCreateRequestDto {
-
+public class RentalUpdateRequestDto {
     @NotBlank
     @Size(max = 255)
     private String name;
@@ -31,7 +29,4 @@ public class RentalCreateRequestDto {
     @NotBlank
     @Size(max = 2000)
     private String description;
-
-    @NotNull(message = "Picture is required")
-    private MultipartFile picture;
 }

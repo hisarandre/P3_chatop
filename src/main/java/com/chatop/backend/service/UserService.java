@@ -1,5 +1,4 @@
 package com.chatop.backend.service;
-import com.chatop.backend.dto.UserResponseDto;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.exception.UserNotFoundException;
 import com.chatop.backend.repository.UserRepository;

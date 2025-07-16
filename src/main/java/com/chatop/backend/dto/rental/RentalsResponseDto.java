@@ -1,4 +1,4 @@
-package com.chatop.backend.dto.Rental;
+package com.chatop.backend.dto.rental;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

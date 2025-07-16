@@ -8,6 +8,7 @@ public class UrlUtils {
     private static String baseUrl;
 
     @Value("${app.base-url}")
+
     public void setBaseUrl(String baseUrl) {
         UrlUtils.baseUrl = baseUrl;
     }

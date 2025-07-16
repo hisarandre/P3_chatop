@@ -1,4 +1,4 @@
-package com.chatop.backend.dto.Rental;
+package com.chatop.backend.dto.rental;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -20,6 +20,7 @@ public class RentalResponseDto {
     private BigDecimal price;
     private String picture;
     private String description;
+    private Integer owner_id;
 
     @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDateTime created_at;

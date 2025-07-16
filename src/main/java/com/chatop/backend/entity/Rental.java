@@ -56,14 +56,14 @@ public class Rental {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    // Many-to-One: Many rentals can belong to one user
+    // Many rentals can belong to one user
     // fetch = FetchType.LAZY: Owner is loaded only when accessed (performance optimization)
     // optional = false: Rental must have an owner
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    // One-to-Many: One rental can have multiple messages (inquiries, comments)
+    // One rental can have multiple messages
     @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Message> messages = new LinkedHashSet<>();
 }

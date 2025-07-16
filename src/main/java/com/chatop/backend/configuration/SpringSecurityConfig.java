@@ -24,6 +24,10 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Spring Security configuration for JWT-based authentication.
+ * Configures stateless session management and JWT token processing.
+ */
 @Slf4j
 @Configuration
 @EnableWebSecurity
@@ -35,6 +39,14 @@ public class SpringSecurityConfig {
 
     private final UserDetailsService customUserDetailsService;
 
+    /**
+     * Configures the security filter chain with JWT authentication.
+     * Sets up stateless session, disables CSRF for API usage,
+     * and defines public/protected routes.
+     *
+     * @param http the HttpSecurity to configure
+     * @return the configured SecurityFilterChain
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -46,6 +58,7 @@ public class SpringSecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/register",
                                 "/swagger-ui/**",
+                                "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/upload/**"
@@ -54,12 +67,22 @@ public class SpringSecurityConfig {
                 .build();
     }
 
+    /**
+     * Creates a JWT encoder for generating JWT tokens.
+     *
+     * @return configured JwtEncoder
+     */
     @Bean
     public JwtEncoder jwtEncoder() {
         byte[] keyBytes = Base64.getDecoder().decode(this.jwtKey);
         return new NimbusJwtEncoder(new ImmutableSecret<>(keyBytes));
     }
 
+    /**
+     * Creates a JWT decoder for validating JWT tokens.
+     *
+     * @return configured JwtDecoder
+     */
     @Bean
     public JwtDecoder jwtDecoder() {
         byte[] keyBytes = Base64.getDecoder().decode(this.jwtKey);
@@ -69,11 +92,24 @@ public class SpringSecurityConfig {
                 .build();
     }
 
+    /**
+     * Provides a BCrypt password encoder for passwords.
+     *
+     * @return BCryptPasswordEncoder
+     */
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configures the authentication manager with custom user details service
+     * and password encoder.
+     *
+     * @param http the HttpSecurity
+     * @param passwordEncoder the password encoder
+     * @return configured AuthenticationManager
+     */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder passwordEncoder) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =

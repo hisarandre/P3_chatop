@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -109,5 +110,16 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND.value()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        log.warn("Access denied: {}", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(
+                "ACCESS_DENIED",
+                ex.getMessage(),
+                HttpStatus.FORBIDDEN.value()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 }
